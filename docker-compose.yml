@@ -1,0 +1,41 @@
+version: '3'
+services:
+  write_service:
+    build: ./clojure-leiningen-rest-service
+    ports:
+      - "3000:3000"
+  stream_processor:
+    build: ./java-dropwizard-rest-service
+  read_service:
+    build: ./java-dropwizard-rest-service
+    ports:
+      - "8080:8080"
+  postgres:
+    image: postgres:9.6-alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - default
+      - makefile_microservices
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    volumes:
+      - zookeeper:/opt/zookeeper-3.4.6/data
+  kafka:
+    image: wurstmeister/kafka:0.10.2.0
+    environment:
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - kafka:/kafka
+    networks:
+      - default
+      - makefile_microservices
+networks:
+  makefile_microservices:
+    external: true
+volumes:
+  postgres:
+  zookeeper:
+  kafka:
