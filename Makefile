@@ -43,7 +43,7 @@ database-bootstrap: all _run sleep
 
 .PHONY: database-migrate
 database-migrate: database-bootstrap
-	-docker run --network makefile_microservices --rm -i --entrypoint psql postgres:9.5-alpine -h postgres -U postgres -d makefile_microservices < ChangeCapture/src/test/resources/test-schema.sql
+	-docker run --network makefile_microservices --rm -i --entrypoint psql postgres:9.5-alpine -h postgres -U postgres -d makefile_microservices < clojure-leiningen-rest-service/test-resources/test-schema.sql
 
 .PHONY: run
 run: database-migrate
