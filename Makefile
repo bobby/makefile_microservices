@@ -7,6 +7,10 @@ DATABASE_NAME=makefile_microservices
 DATABASE_MIGRATION_PATH=clojure-leiningen-rest-service/test-resources/test-schema.sql
 POSTGRES_IMAGE=postgres:9.5-alpine
 KAFKA_IMAGE=wurstmeister/kafka:0.10.2.0
+KOPS_CLUSTER_NAME=kube.nanomanage.com
+KOPS_STATE_STORE=s3://kube-nanomanage-com-state-store
+AWS_REGION=us-east-1
+AWS_ZONES=us-east-1a,us-east-1b,us-east-1c
 
 ################################################################################
 
@@ -49,10 +53,6 @@ java-dropwizard-stream-processor/target/java-dropwizard-stream-processor-*.jar:
 .PHONY: all
 all: clojure-leiningen-rest-service/target/clojure-leiningen-rest-service-*-standalone.jar java-dropwizard-rest-service/target/java-dropwizard-rest-service-*.jar java-dropwizard-stream-processor/target/java-dropwizard-stream-processor-*.jar
 	docker-compose --project-name=makefile_microservices build
-
-.PHONY: push
-push: all
-	docker-compose --project-name=makefile_microservices push
 
 # Create docker external network used by non-compose-managed containers to connect to compose-managed services
 .PHONY: _network
@@ -108,3 +108,19 @@ psql:
 .PHONY: kafka-console-consumer
 kafka-console-consumer:
 	docker run --network makefile_microservices --rm -it --entrypoint /opt/kafka/bin/kafka-console-consumer.sh $(KAFKA_IMAGE) --bootstrap-server kafka:9092 --topic $(KAFKA_TOPIC) $(args)
+
+
+# Build a Kubernetes cluster via kops
+.PHONY: provision
+provision:
+	kops create cluster --cloud=aws --node-count=3 --node-size=t2.small --zones $(AWS_ZONES) --master-size=t2.large --master-zones $(AWS_ZONES) --name $(KOPS_CLUSTER_NAME) --state $(KOPS_STATE_STORE) --ssh-public-key=~/.ssh/id_rsa.pub --yes
+
+# Push Docker images to ECR
+.PHONY: push
+push: all
+	docker-compose --project-name=makefile_microservices push
+
+# Deploy the services to Kubernetes
+.PHONY: deploy
+deploy: push
+	kompose up
