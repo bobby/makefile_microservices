@@ -6,10 +6,17 @@ services:
       - "3000:3000"
   stream_processor:
     build: ./java-dropwizard-rest-service
+    ports:
+      - "5005:5005"
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
   read_service:
     build: ./java-dropwizard-rest-service
     ports:
       - "8080:8080"
+      - "5006:5005"
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
   postgres:
     image: postgres:9.6-alpine
     volumes:
