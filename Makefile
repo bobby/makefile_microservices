@@ -2,7 +2,7 @@
 
 KAFKA_TOPIC=test
 SLEEP_SECONDS=2
-LOG_OPTIONS="-t -f"
+LOG_OPTIONS=-t -f
 DATABASE_NAME=makefile_microservices
 DATABASE_MIGRATION_PATH=clojure-leiningen-rest-service/test-resources/test-schema.sql
 POSTGRES_IMAGE=postgres:9.5-alpine
