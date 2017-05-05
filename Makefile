@@ -12,6 +12,13 @@ KAFKA_IMAGE=wurstmeister/kafka:0.10.2.0
 
 default: all
 
+# Run all tests
+.PHONY: check
+check:
+	cd clojure-leiningen-rest-service && lein test
+	cd java-dropwizard-rest-service && mvn test
+	cd java-dropwizard-stream-processor && mvn test
+
 # Delete all built artifacts, both language builds and docker images
 .PHONY: clean
 clean:
