@@ -2,16 +2,19 @@ version: '3'
 services:
   write_service:
     build: ./clojure-leiningen-rest-service
+    image: "419056267649.dkr.ecr.us-east-1.amazonaws.com/write_service"
     ports:
       - "3000:3000"
   stream_processor:
     build: ./java-dropwizard-rest-service
+    image: "419056267649.dkr.ecr.us-east-1.amazonaws.com/stream_processor"
     ports:
       - "5005:5005"
     environment:
       JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
   read_service:
     build: ./java-dropwizard-rest-service
+    image: "419056267649.dkr.ecr.us-east-1.amazonaws.com/read_service"
     ports:
       - "8080:8080"
       - "5006:5005"

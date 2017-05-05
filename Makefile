@@ -43,6 +43,10 @@ java-dropwizard-stream-processor/target/java-dropwizard-stream-processor-*.jar:
 all: clojure-leiningen-rest-service/target/clojure-leiningen-rest-service-*-standalone.jar java-dropwizard-rest-service/target/java-dropwizard-rest-service-*.jar java-dropwizard-stream-processor/target/java-dropwizard-stream-processor-*.jar
 	docker-compose --project-name=makefile_microservices build
 
+.PHONY: push
+push: all
+	docker-compose --project-name=makefile_microservices push
+
 # Create docker external network used by non-compose-managed containers to connect to compose-managed services
 .PHONY: _network
 _network:
