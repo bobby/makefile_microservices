@@ -84,10 +84,11 @@ database-migrate: database-bootstrap
 run: database-migrate
 	docker-compose --project-name=makefile_microservices ps
 
-# Run just the supporting services
-.PHONY: services
-services: run
-	docker-compose stop write_service stream_processor read_service
+# Stops the write_service, and launches a Clojure REPL instead
+.PHONY: repl
+repl: run
+	docker-compose stop write_service
+	cd clojure-leiningen-rest-service && lein repl :headless
 
 # Stop the services (but preserve the images and state)
 .PHONY: stop
